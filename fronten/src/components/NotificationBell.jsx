@@ -1,4 +1,4 @@
-// src/components/NotificationBell.jsx
+// src/components/NotificationBell.jsx - UPDATED
 import React, { useState, useEffect } from "react";
 import API from "../services/api";
 import "./NotificationBell.css";
@@ -22,7 +22,40 @@ const NotificationBell = ({ user }) => {
     }
   };
 
+  const markAsRead = async (notificationId) => {
+    try {
+      await API.put(`/notifications/${notificationId}/read`);
+      setNotifications(notifications.map(notif => 
+        notif._id === notificationId ? { ...notif, read: true } : notif
+      ));
+    } catch (err) {
+      console.error("Failed to mark as read:", err);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await API.put("/notifications/read-all");
+      setNotifications(notifications.map(notif => ({ ...notif, read: true })));
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
+    }
+  };
+
   const unreadCount = notifications.filter(notif => !notif.read).length;
+
+  const handleNotificationClick = (notification) => {
+    markAsRead(notification._id);
+    
+    // Navigate based on notification type
+    if (notification.type === "application" && user.role === "company") {
+      window.location.href = "/company-dashboard#applications";
+    } else if (notification.type === "status_update" && user.role === "student") {
+      window.location.href = "/student-dashboard";
+    }
+    
+    setShowNotifications(false);
+  };
 
   return (
     <div className="notification-bell">
@@ -38,7 +71,14 @@ const NotificationBell = ({ user }) => {
         <div className="notification-dropdown">
           <div className="notification-header">
             <h4>Notifications</h4>
-            <button onClick={() => setShowNotifications(false)}>×</button>
+            <div>
+              {unreadCount > 0 && (
+                <button onClick={markAllAsRead} className="btn btn-sm">
+                  Mark all read
+                </button>
+              )}
+              <button onClick={() => setShowNotifications(false)}>×</button>
+            </div>
           </div>
           
           <div className="notification-list">
@@ -47,9 +87,14 @@ const NotificationBell = ({ user }) => {
                 <div 
                   key={notification._id} 
                   className={`notification-item ${notification.read ? 'read' : 'unread'}`}
+                  onClick={() => handleNotificationClick(notification)}
                 >
-                  <p>{notification.message}</p>
-                  <small>{new Date(notification.createdAt).toLocaleDateString()}</small>
+                  <div className="notification-content">
+                    <h5>{notification.title}</h5>
+                    <p>{notification.message}</p>
+                    <small>{new Date(notification.createdAt).toLocaleDateString()}</small>
+                  </div>
+                  {!notification.read && <div className="unread-dot"></div>}
                 </div>
               ))
             ) : (

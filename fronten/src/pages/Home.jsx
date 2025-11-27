@@ -13,12 +13,12 @@ const Home = ({ user, handleLogout, setUser }) => {
   const [locationFilter, setLocationFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [showModal, setShowModal] = useState(false);
-  const [showApplyModal, setShowApplyModal] = useState(false); // ✅ Added
-  const [selectedInternship, setSelectedInternship] = useState(null); // ✅ Added
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [selectedInternship, setSelectedInternship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("companies");
 
-  // ✅ Fetch companies & internships from backend
+  // ✅ Fetch companies & internships
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -227,7 +227,18 @@ const Home = ({ user, handleLogout, setUser }) => {
                 {filteredCompanies.map((company) => (
                   <div key={company._id} className="company-card">
                     <div className="company-header">
-                      <h3>{company.name}</h3>
+                      {/* ✅ Updated: clickable company name */}
+                      <h3>
+                        <Link
+                          to={`/company/${company._id}`}
+                          style={{
+                            color: "inherit",
+                            textDecoration: "none",
+                          }}
+                        >
+                          {company.name}
+                        </Link>
+                      </h3>
                       <div className="company-location">
                         <i className="fas fa-map-marker-alt"></i>
                         <span>{getLocationName(company.location)}</span>
@@ -357,7 +368,6 @@ const Home = ({ user, handleLogout, setUser }) => {
                           )}
                         </div>
 
-                        {/* ✅ Dynamic Apply button */}
                         {user?.role === "student" ? (
                           <button
                             className="btn btn-primary"
@@ -401,7 +411,6 @@ const Home = ({ user, handleLogout, setUser }) => {
         </section>
       )}
 
-      {/* ✅ Modals */}
       {showApplyModal && selectedInternship && (
         <ApplyInternship
           internship={selectedInternship}
@@ -420,3 +429,4 @@ const Home = ({ user, handleLogout, setUser }) => {
 };
 
 export default Home;
+  

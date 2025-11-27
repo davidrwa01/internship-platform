@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.jsx - UPDATED
 import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -15,6 +15,8 @@ import Register from "./pages/Register";
 import StudentDashboard from "./pages/StudentDashboard";
 import CompanyDashboard from "./pages/CompanyDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import CompanyProfile from "./pages/CompanyProfile";
+import ApplyInternship from "./components/ApplyInternship"; // ADD THIS IMPORT
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -34,7 +36,6 @@ const App = () => {
       } catch (err) {
         console.warn("Session invalid → clearing storage", err);
         localStorage.removeItem("token");
-        localStorage.removeItem("user");
         setUser(null);
       } finally {
         setLoading(false);
@@ -46,7 +47,6 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
     setUser(null);
   };
 
@@ -65,11 +65,22 @@ const App = () => {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Home user={user} handleLogout={handleLogout} />} />
+        <Route path="/" element={<Home user={user} handleLogout={handleLogout} setUser={setUser} />} />
         <Route path="/about" element={<About user={user} />} />
         <Route path="/contact" element={<Contact user={user} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/company/:companyId" element={<CompanyProfile user={user} />} />
+
+        {/* Apply Route - ADD THIS */}
+        <Route 
+          path="/apply/:internshipId" 
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <ApplyInternship user={user} />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Protected Routes */}
         <Route

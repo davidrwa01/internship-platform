@@ -2,6 +2,18 @@
 import Application from "../models/Application.js";
 import Internship from "../models/Internship.js";
 import Company from "../models/Company.js";
+import User from "../models/User.js";
+import Notification from "../models/Notification.js";
+
+// Helper function to create notifications
+const createNotification = async (notificationData) => {
+  try {
+    const notification = await Notification.create(notificationData);
+    return notification;
+  } catch (error) {
+    console.error("Create notification error:", error);
+  }
+};
 
 // Student applies for an internship
 export const createApplication = async (req, res) => {
@@ -16,7 +28,7 @@ export const createApplication = async (req, res) => {
     }
 
     // Ensure internship exists
-    const internship = await Internship.findById(internshipId);
+    const internship = await Internship.findById(internshipId).populate("company");
     if (!internship) {
       return res.status(404).json({ message: "Internship not found" });
     }
@@ -36,6 +48,20 @@ export const createApplication = async (req, res) => {
       internship: internshipId,
       status: "pending",
     });
+
+    // Create notification for company
+    const companyUser = await User.findOne({ email: internship.company.email });
+    if (companyUser) {
+      await createNotification({
+        recipient: companyUser._id,
+        sender: req.user.id,
+        type: "application",
+        title: "New Application",
+        message: `${req.user.fullName || req.user.email} applied for your internship: ${internship.title}`,
+        relatedApplication: application._id,
+        relatedInternship: internshipId,
+      });
+    }
 
     // Populate data before sending response
     await application.populate({
@@ -78,7 +104,7 @@ export const getMyApplications = async (req, res) => {
   }
 };
 
-// Get applications for company's internships
+// Get applications for company's internships - FIXED: Make sure this export exists
 export const getCompanyApplications = async (req, res) => {
   try {
     console.log("Getting company applications for user:", req.user.email);
@@ -104,7 +130,7 @@ export const getCompanyApplications = async (req, res) => {
     })
     .populate({
       path: "student",
-      select: "fullName email phone"
+      select: "fullName email phone schoolName studentLocation"
     })
     .sort({ createdAt: -1 });
 
@@ -121,7 +147,8 @@ export const updateApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const application = await Application.findById(req.params.id)
-      .populate('internship');
+      .populate('internship')
+      .populate('student');
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
@@ -136,6 +163,17 @@ export const updateApplicationStatus = async (req, res) => {
 
     application.status = status;
     await application.save();
+
+    // Create notification for student
+    await createNotification({
+      recipient: application.student._id,
+      sender: req.user.id,
+      type: "status_update",
+      title: "Application Status Updated",
+      message: `Your application for ${application.internship.title} has been ${status}`,
+      relatedApplication: application._id,
+      relatedInternship: application.internship._id,
+    });
 
     res.status(200).json({
       message: "Application status updated",

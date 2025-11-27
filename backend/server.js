@@ -1,4 +1,4 @@
-// backend/server.js
+// backend/server.js - UPDATED
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -13,6 +13,8 @@ import internshipRoutes from "./routes/internshipRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import testRoutes from "./routes/testRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js"; // NEW
+import messageRoutes from "./routes/messageRoutes.js"; // NEW
 
 dotenv.config();
 
@@ -32,7 +34,7 @@ app.use(morgan("dev"));
 // Connect DB
 connectDB();
 
-// Routes - FIXED: Added studentRoutes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/company", companyRoutes);
@@ -40,6 +42,8 @@ app.use("/api/internship", internshipRoutes);
 app.use("/api/application", applicationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/test", testRoutes);
+app.use("/api/notifications", notificationRoutes); // NEW
+app.use("/api/messages", messageRoutes); // NEW
 
 // Health check
 app.get("/", (req, res) => {

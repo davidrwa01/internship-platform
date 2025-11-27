@@ -1296,3 +1296,62 @@ footer {
 .application-actions .btn {
   min-width: 120px;
 }
+/* Add to Home.css */
+
+/* Action buttons in tables */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Notification enhancements */
+.notification-content h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.notification-content p {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.8rem;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #007bff;
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+/* Company details grid */
+.company-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}

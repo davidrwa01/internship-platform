@@ -1,6 +1,6 @@
-// src/pages/CompanyProfile.jsx
+// src/pages/CompanyProfile.jsx - UPDATED
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import API from "../services/api";
@@ -98,7 +98,10 @@ const CompanyProfile = ({ user }) => {
                 </div>
                 {company.website && (
                   <div className="detail-item">
-                    <strong>Website:</strong> {company.website}
+                    <strong>Website:</strong> 
+                    <a href={company.website} target="_blank" rel="noopener noreferrer">
+                      {company.website}
+                    </a>
                   </div>
                 )}
                 {company.experience && (
@@ -124,7 +127,7 @@ const CompanyProfile = ({ user }) => {
           </div>
 
           {/* Internships Offered */}
-          <h2 className="section-title">Internships Offered</h2>
+          <h2 className="section-title">Internships Offered ({internships.length})</h2>
           <div className="companies-grid">
             {internships.length > 0 ? (
               internships.map((internship) => (
@@ -150,14 +153,16 @@ const CompanyProfile = ({ user }) => {
                     )}
                     
                     {user?.role === "student" ? (
-                      <button className="btn btn-primary">Apply Now</button>
-                    ) : !user ? (
-                      <button 
-                        className="btn btn-outline"
-                        onClick={() => alert("Please login as a student to apply")}
+                      <Link 
+                        to={`/apply/${internship._id}`}
+                        className="btn btn-primary"
                       >
+                        Apply Now
+                      </Link>
+                    ) : !user ? (
+                      <Link to="/login" className="btn btn-primary">
                         Login to Apply
-                      </button>
+                      </Link>
                     ) : (
                       <button className="btn btn-outline" disabled>
                         {user.role === "company" ? "Your Internship" : "View Only"}
