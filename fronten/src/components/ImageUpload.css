@@ -1,0 +1,154 @@
+.image-upload-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fff;
+  margin-bottom: 20px;
+}
+
+.image-upload-header h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.image-upload-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.image-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #d0d0d0;
+  border-radius: 8px;
+  padding: 10px;
+  background: #f9f9f9;
+  min-height: 150px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.file-input-section {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  overflow: hidden;
+}
+
+.file-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  background: #fff;
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.file-input-label:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.file-input-label i {
+  font-size: 16px;
+}
+
+.upload-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancel-btn, .upload-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cancel-btn {
+  border: 1px solid #6c757d;
+  background: #fff;
+  color: #6c757d;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #6c757d;
+  color: #fff;
+}
+
+.upload-btn {
+  border: 1px solid #007bff;
+  background: #007bff;
+  color: #fff;
+}
+
+.upload-btn:hover:not(:disabled) {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.cancel-btn:disabled, .upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.file-info {
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .image-upload-container {
+    padding: 15px;
+  }
+
+  .upload-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn, .upload-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

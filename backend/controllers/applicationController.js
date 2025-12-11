@@ -1,186 +1,258 @@
-// backend/controllers/applicationController.js
 import Application from "../models/Application.js";
 import Internship from "../models/Internship.js";
 import Company from "../models/Company.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 
-// Helper function to create notifications
-const createNotification = async (notificationData) => {
+// -------------------------------------------------
+// Helper: Create Notification with proper routing
+// -------------------------------------------------
+const createNotification = async (data) => {
   try {
-    const notification = await Notification.create(notificationData);
-    return notification;
-  } catch (error) {
-    console.error("Create notification error:", error);
+    return await Notification.create(data);
+  } catch (err) {
+    console.error("Notification error:", err);
   }
 };
 
-// Student applies for an internship
+// -------------------------------------------------
+// STUDENT: Create Application (Student → Company notification)
+// -------------------------------------------------
 export const createApplication = async (req, res) => {
   try {
     const { internshipId } = req.body;
-    
-    console.log("Application request from user:", req.user.id);
-    console.log("Internship ID:", internshipId);
-
     if (!internshipId) {
-      return res.status(400).json({ message: "Internship ID is required" });
+      return res.status(400).json({ message: "Internship ID required" });
     }
 
-    // Ensure internship exists
     const internship = await Internship.findById(internshipId).populate("company");
     if (!internship) {
       return res.status(404).json({ message: "Internship not found" });
     }
 
-    // Check if student already applied
+    // Check if company is approved
+    if (!internship.company.approved) {
+      return res.status(400).json({ message: "Cannot apply to internships from unapproved companies" });
+    }
+
     const existing = await Application.findOne({
-      student: req.user.id,
+      student: req.user._id,
       internship: internshipId,
     });
     if (existing) {
-      return res.status(400).json({ message: "Already applied for this internship" });
+      return res.status(400).json({ message: "Already applied" });
     }
 
-    // Create new application
     const application = await Application.create({
       student: req.user.id,
       internship: internshipId,
       status: "pending",
     });
 
-    // Create notification for company
-    const companyUser = await User.findOne({ email: internship.company.email });
+    // ✅ FIXED: Send notification to COMPANY (not student)
+    const companyUser = await User.findOne({ _id: internship.createdBy });
     if (companyUser) {
       await createNotification({
-        recipient: companyUser._id,
+        recipient: companyUser._id, // Send to COMPANY
         sender: req.user.id,
         type: "application",
-        title: "New Application",
-        message: `${req.user.fullName || req.user.email} applied for your internship: ${internship.title}`,
+        title: "New Internship Application",
+        message: `${req.user.fullName || req.user.email} applied for your internship "${internship.title}"`,
         relatedApplication: application._id,
-        relatedInternship: internshipId,
-      });
+        relatedInternship: internshipId
+      }, req.app.get("io"));
+
+      console.log(`✅ Application notification sent to company: ${companyUser.email}`);
+    } else {
+      console.log("⚠️ Company user not found for notification");
     }
 
-    // Populate data before sending response
     await application.populate({
       path: "internship",
-      populate: { path: "company", select: "name location contactEmail" }
+      populate: { path: "company", select: "name location contactEmail" },
     });
 
-    console.log("Application created successfully:", application._id);
-
-    res.status(201).json({
-      message: "Application submitted successfully",
-      application,
-    });
+    res.status(201).json({ message: "Applied successfully", application });
   } catch (error) {
-    console.error("Create application error:", error);
+    console.error("Create app error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get logged-in student's applications
+// -------------------------------------------------
+// STUDENT: Get My Applications
+// -------------------------------------------------
 export const getMyApplications = async (req, res) => {
   try {
-    console.log("Getting applications for user:", req.user.id);
-    
     const applications = await Application.find({ student: req.user.id })
       .populate({
         path: "internship",
-        populate: { 
-          path: "company", 
-          select: "name location email phone" 
-        },
+        populate: { path: "company", select: "name location email phone" },
       })
       .sort({ createdAt: -1 });
-    
-    console.log("Found applications:", applications.length);
+
     res.status(200).json(applications);
   } catch (error) {
-    console.error("Get applications error:", error);
+    console.error("Get my apps error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get applications for company's internships - FIXED: Make sure this export exists
-export const getCompanyApplications = async (req, res) => {
+// -------------------------------------------------
+// STUDENT: Cancel (Delete) Application – ONLY PENDING
+// -------------------------------------------------
+export const cancelApplication = async (req, res) => {
   try {
-    console.log("Getting company applications for user:", req.user.email);
-    
-    // Find company owned by logged-in user
-    const company = await Company.findOne({ email: req.user.email });
-    
-    if (!company) {
-      return res.status(404).json({ message: "Company not found" });
-    }
-
-    // Find internships owned by this company
-    const internships = await Internship.find({ company: company._id });
-    const internshipIds = internships.map(internship => internship._id);
-
-    // Find applications for these internships
-    const applications = await Application.find({ 
-      internship: { $in: internshipIds } 
-    })
-    .populate({
-      path: "internship",
-      select: "title department"
-    })
-    .populate({
-      path: "student",
-      select: "fullName email phone schoolName studentLocation"
-    })
-    .sort({ createdAt: -1 });
-
-    console.log("Found company applications:", applications.length);
-    res.status(200).json(applications);
-  } catch (error) {
-    console.error("Get company applications error:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Update application status
-export const updateApplicationStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-    const application = await Application.findById(req.params.id)
-      .populate('internship')
-      .populate('student');
+    const application = await Application.findOne({
+      _id: req.params.id,
+      student: req.user._id,
+    });
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
 
-    // Verify the company owns this internship
-    const company = await Company.findOne({ email: req.user.email });
-    
-    if (!company || application.internship.company.toString() !== company._id.toString()) {
+    if (application.status !== "pending") {
+      return res.status(400).json({
+        message: `Cannot cancel application that is already ${application.status}`,
+      });
+    }
+
+    await Application.findByIdAndDelete(req.params.id);
+
+    // Send notification to company about application cancellation
+    const companyUser = await User.findOne({ _id: application.internship.createdBy });
+    if (companyUser) {
+      await createNotification({
+        recipient: companyUser._id,
+        sender: req.user.id,
+        type: "application_cancelled",
+        title: "Application Cancelled",
+        message: `${req.user.fullName || req.user.email} cancelled their application for "${application.internship.title}"`,
+        relatedApplication: application._id,
+        relatedInternship: application.internship._id
+      }, req.app.get("io"));
+
+      console.log(`✅ Application cancellation notification sent to company: ${companyUser.email}`);
+    }
+
+    res.status(200).json({ message: "Application cancelled successfully" });
+  } catch (error) {
+    console.error("Cancel app error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// -------------------------------------------------
+// COMPANY: Get Applications for My Internships
+// -------------------------------------------------
+export const getCompanyApplications = async (req, res) => {
+  try {
+    const company = await Company.findOne({ createdBy: req.user.id });
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const internships = await Internship.find({ company: company._id });
+    const internshipIds = internships.map((i) => i._id);
+
+    const applications = await Application.find({
+      internship: { $in: internshipIds },
+    })
+      .populate({ path: "internship", select: "title department" })
+      .populate({
+        path: "student",
+        select: "fullName email phone schoolName studentLocation",
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error("Get company apps error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// -------------------------------------------------
+// COMPANY: Update Application Status (Company → Student notification)
+// -------------------------------------------------
+export const updateApplicationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const application = await Application.findById(req.params.id)
+      .populate("internship")
+      .populate("student");
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    const company = await Company.findOne({ createdBy: req.user.id });
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    if (application.internship.company.toString() !== company._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
     application.status = status;
     await application.save();
 
-    // Create notification for student
+    // ✅ Send notification to STUDENT about status update
     await createNotification({
       recipient: application.student._id,
       sender: req.user.id,
       type: "status_update",
       title: "Application Status Updated",
-      message: `Your application for ${application.internship.title} has been ${status}`,
+      message: `Your application for "${application.internship.title}" has been ${status}`,
       relatedApplication: application._id,
       relatedInternship: application.internship._id,
-    });
+    }, req.app.get("io"));
+
+    res.status(200).json({ message: "Status updated", application });
+  } catch (error) {
+    console.error("Update status error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// -------------------------------------------------
+// COMPANY: Get Applicants List for a Specific Internship
+// -------------------------------------------------
+export const getApplicationsByInternshipId = async (req, res) => {
+  try {
+    const { internshipId } = req.params;
+
+    const company = await Company.findOne({ createdBy: req.user.id });
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    const internship = await Internship.findById(internshipId);
+    if (!internship) {
+      return res.status(404).json({ message: "Internship not found" });
+    }
+
+    if (internship.company.toString() !== company._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to view applicants for this internship" });
+    }
+
+    const applications = await Application.find({ internship: internshipId })
+      .populate({
+        path: "student",
+        select: "fullName email phone classLevel field schoolName"
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
-      message: "Application status updated",
-      application
+      success: true,
+      count: applications.length,
+      data: applications
     });
   } catch (error) {
-    console.error("Update application status error:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Get applications by internship error:", error);
+    res.status(500).json({ message: "Failed to get applicants list" });
   }
 };

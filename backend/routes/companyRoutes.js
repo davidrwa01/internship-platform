@@ -1,28 +1,45 @@
-import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import express from 'express';
+import { protect } from '../middleware/protect.js';
+import { requireAdmin } from '../middleware/requireAdmin.js';
 import {
-  getAllCompanies,
-  approveCompany,
-  getCompanyById,
-  updateCompanyProfile,
-  getMyCompany
-} from "../controllers/companyController.js";
+  getCompanies,
+  getCompany,
+  getMyCompany,
+  updateMyCompany,
+  createCompany,
+  updateCompanyStatus,
+  deleteCompany,
+  uploadCompanyPhoto,
+  uploadCompanyPicture,
+  deleteCompanyPicture,
+  deleteCompanyPhoto
+} from '../controllers/companyController.js';
+import { uploadSingle } from '../middleware/upload.js';
+import { uploadMultiple } from '../middleware/upload.js';
 
 const router = express.Router();
 
-// GET /api/company → list all companies
-router.get("/", getAllCompanies);
+// Public routes
+router.get('/', getCompanies);
+router.get('/:id', getCompany);
 
-// GET /api/company/my → get logged-in company
-router.get("/my", protect, getMyCompany);
+// Protected routes (require authentication)
+router.use(protect);
 
-// GET /api/company/:id → get single company
-router.get("/:id", getCompanyById);
+router.get('/my-company', getMyCompany);
+router.put('/my-company', updateMyCompany);
+router.post('/', createCompany);
 
-// PUT /api/company/profile → update company profile
-router.put("/profile", protect, updateCompanyProfile);
+// Admin only routes
+router.use(requireAdmin);
+router.put('/:id/status', updateCompanyStatus);
+router.delete('/:id', deleteCompany);
 
-// PUT /api/company/:id/approve → approve company
-router.put("/:id/approve", protect, approveCompany);
+// Photo upload routes (protected)
+router.post('/logo', uploadSingle, uploadCompanyPhoto);
+router.delete('/logo', deleteCompanyPhoto);
+// Company gallery pictures (company users upload with description)
+router.post('/my-company/pictures', uploadSingle, uploadCompanyPicture);
+router.delete('/my-company/pictures/:pictureId', deleteCompanyPicture);
 
 export default router;

@@ -1,36 +1,30 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import API from "../services/api";
-import "./Home.css";
+import { Link, useNavigate } from "react-router-dom";
+import "./Auth.css";
 
 const Login = ({ setUser }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const navigate = useNavigate();
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      const res = await API.post("/auth/login", { email, password });
-
-      // Save token only
+      const res = await API.post("/auth/login", formData);
+      // Save token to localStorage
       localStorage.setItem("token", res.data.token);
-
-      // Update user state in App.jsx
-      if (setUser) {
-        setUser(res.data.user);
-      }
-
-      // Show success
-      alert("Login successful!");
-
-      // Navigate based on role
+      // Update user state in the parent component
+      setUser(res.data.user);
+      // Redirect user to dashboard based on role
       const role = res.data.user.role;
       if (role === "student") {
         navigate("/student-dashboard");
@@ -42,10 +36,7 @@ const Login = ({ setUser }) => {
         navigate("/");
       }
     } catch (err) {
-      const message = err.response?.data?.message || "Login failed";
-      alert(message);
-    } finally {
-      setLoading(false);
+      alert(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -55,25 +46,24 @@ const Login = ({ setUser }) => {
       <section className="hero">
         <div className="container">
           <h2>Login</h2>
-          <p>Access your account to manage internships.</p>
+          <p>Welcome back! Please login to your account.</p>
         </div>
       </section>
 
       <section className="companies-section">
         <div className="container">
           <form className="modal-content" onSubmit={handleSubmit}>
-            <h3 className="modal-title">Sign In</h3>
+            <h3 className="modal-title">Login to your account</h3>
 
             <div className="form-group">
               <label>Email</label>
               <input
                 type="email"
+                name="email"
                 className="form-control"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@gmail.com"
+                onChange={handleChange}
                 required
-                disabled={loading}
               />
             </div>
 
@@ -81,23 +71,20 @@ const Login = ({ setUser }) => {
               <label>Password</label>
               <input
                 type="password"
+                name="password"
                 className="form-control"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleChange}
                 required
-                disabled={loading}
               />
             </div>
 
-            <button
-              className="btn btn-primary"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Logging in..." : "Login"}
+            <button className="btn btn-primary" type="submit">
+              Login
             </button>
           </form>
+          <div style={{ marginTop: "1rem", textAlign: "center" }}>
+            Don't have an account? <Link to="/register">Register here</Link>
+          </div>
         </div>
       </section>
       <Footer />

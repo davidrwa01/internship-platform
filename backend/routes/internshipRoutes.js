@@ -1,32 +1,33 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
+  getInternships,
+  getMyInternships,
   createInternship,
-  getCompanyInternships,
-  getAllInternships,
-  getInternshipById,
+  getInternship,
   getInternshipsByCompany,
-  deleteInternship
+  updateInternship,
+  deleteInternship,
+  toggleInternshipStatus,
+  getInternshipStats
 } from "../controllers/internshipController.js";
 
 const router = express.Router();
 
-// GET /api/internship → all internships (for home page)
-router.get("/", getAllInternships);
-
-// GET /api/internship/mine → company's internships
-router.get("/mine", protect, getCompanyInternships);
-
-// GET /api/internship/company/:companyId → internships by company
+// Public routes
+router.get("/", getInternships);
 router.get("/company/:companyId", getInternshipsByCompany);
+router.get("/:id", getInternship);
+router.get("/stats/dashboard", getInternshipStats);
 
-// GET /api/internship/:id → single internship
-router.get("/:id", getInternshipById);
+// Protect all routes below (require authentication)
+router.use(protect);
 
-// POST /api/internship → create internship
-router.post("/", protect, createInternship);
-
-// DELETE /api/internship/:id → delete internship
-router.delete("/:id", protect, deleteInternship);
+// Company routes
+router.get("/company/my/internships", getMyInternships);
+router.post("/", createInternship);
+router.put("/:id", updateInternship);
+router.patch("/:id/status", toggleInternshipStatus);
+router.delete("/:id", deleteInternship);
 
 export default router;

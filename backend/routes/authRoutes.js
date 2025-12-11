@@ -1,7 +1,6 @@
 import express from "express";
 import { register, login } from "../controllers/authController.js";
-import { protect } from "../middleware/authMiddleware.js";
-import User from "../models/User.js";
+import { protect } from "../middleware/protect.js";
 
 const router = express.Router();
 
@@ -11,23 +10,17 @@ router.post("/register", register);
 // Login user
 router.post("/login", login);
 
-// Get current user
+// Get current user (protected)
 router.get("/me", protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
-    
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     res.json({
       user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        companyName: user.companyName,
+        id: req.user._id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+        role: req.user.role,
+        phone: req.user.phone,
+        companyName: req.user.companyName,
       },
     });
   } catch (error) {

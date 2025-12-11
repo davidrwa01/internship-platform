@@ -1,0 +1,92 @@
+/* Badge Component Styles */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* Variants */
+.ui-badge--primary {
+  background: #e3f2fd;
+  color: #0088cc;
+  border: 1px solid #0088cc;
+}
+
+.ui-badge--secondary {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.ui-badge--success {
+  background: #e8f5e9;
+  color: #00cc88;
+  border: 1px solid #00cc88;
+}
+
+.ui-badge--danger {
+  background: #ffebee;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+.ui-badge--warning {
+  background: #fff3e0;
+  color: #ff9900;
+  border: 1px solid #ff9900;
+}
+
+.ui-badge--info {
+  background: #e1f5fe;
+  color: #0277bd;
+  border: 1px solid #0277bd;
+}
+
+/* Sizes */
+.ui-badge--xs {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.ui-badge--sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.ui-badge--md {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.ui-badge--lg {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* Solid variant */
+.ui-badge--primary-solid {
+  background: #0088cc;
+  color: white;
+  border: none;
+}
+
+.ui-badge--success-solid {
+  background: #00cc88;
+  color: white;
+  border: none;
+}
+
+.ui-badge--danger-solid {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+}
+
+.ui-badge--warning-solid {
+  background: #ff9900;
+  color: white;
+  border: none;
+}

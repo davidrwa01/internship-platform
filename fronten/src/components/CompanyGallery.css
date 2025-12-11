@@ -1,0 +1,97 @@
+.company-gallery {
+  margin-top: 24px;
+}
+
+.company-gallery h3 {
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  color: #222;
+}
+
+.company-gallery .gallery-upload-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.company-gallery input[type="file"] {
+  border: 1px solid #ddd;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.company-gallery input[type="text"] {
+  flex: 1 1 240px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.company-gallery .gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.company-gallery .gallery-card {
+  border: 1px solid #eee;
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.company-gallery .gallery-preview {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  background: #fafafa;
+}
+
+.company-gallery .gallery-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.company-gallery .gallery-description {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 8px;
+  min-height: 30px;
+}
+
+.company-gallery .gallery-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.company-gallery .btn {
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.company-gallery .btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.company-gallery .btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.company-gallery .no-pictures {
+  color: #666;
+}

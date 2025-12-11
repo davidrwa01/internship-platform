@@ -1,0 +1,102 @@
+/* Button Component Styles */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.ui-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ui-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ui-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Variants */
+.ui-button--primary {
+  background: linear-gradient(135deg, #0088cc 0%, #005580 100%);
+  color: white;
+}
+
+.ui-button--secondary {
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.ui-button--success {
+  background: linear-gradient(135deg, #00cc88 0%, #008855 100%);
+  color: white;
+}
+
+.ui-button--danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #cc0000 100%);
+  color: white;
+}
+
+.ui-button--warning {
+  background: linear-gradient(135deg, #ffb344 0%, #ff9900 100%);
+  color: white;
+}
+
+.ui-button--outline {
+  background: transparent;
+  color: #0088cc;
+  border: 2px solid #0088cc;
+}
+
+.ui-button--outline:hover:not(:disabled) {
+  background: #f0f7ff;
+}
+
+/* Sizes */
+.ui-button--xs {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.ui-button--sm {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.ui-button--md {
+  padding: 10px 16px;
+  font-size: 16px;
+}
+
+.ui-button--lg {
+  padding: 12px 24px;
+  font-size: 18px;
+}
+
+.ui-button--xl {
+  padding: 14px 32px;
+  font-size: 20px;
+}
+
+/* Block button */
+.ui-button--block {
+  width: 100%;
+}
+
+/* Icon-only button */
+.ui-button--icon {
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+}

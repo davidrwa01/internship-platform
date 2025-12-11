@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "./Footer.css"; // Add this import
 
 const Footer = () => {
   return (
@@ -7,11 +8,10 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-column">
-            <h3>About TVET Internships</h3>
+            <h3>TVET Internships Rwanda</h3> {/* Updated title to match original */}
             <p>
-              We connect TVET students in Rwanda with companies offering real
-              internship opportunities to build hands-on skills for the future.
-            </p>
+              Connecting TVET students with valuable internship opportunities across Rwanda to bridge the gap between education and employment.
+            </p> {/* Updated description to match original */}
           </div>
 
           <div className="footer-column">
@@ -26,7 +26,12 @@ const Footer = () => {
           </div>
 
           <div className="footer-column">
-            <h3>Follow Us</h3>
+            <h3>Contact Info</h3> {/* Updated title to match original */}
+            <ul>
+              <li><i className="fas fa-map-marker-alt"></i> Kigali, Rwanda</li>
+              <li><i className="fas fa-phone"></i> +250 799 387 258</li>
+              <li><i className="fas fa-envelope"></i> info@tvetinternships.rw</li>
+            </ul>
             <div className="social-links">
               <a href="#"><i className="fab fa-facebook-f"></i></a>
               <a href="#"><i className="fab fa-twitter"></i></a>
@@ -37,7 +42,7 @@ const Footer = () => {
         </div>
 
         <div className="copyright">
-          <p>© {new Date().getFullYear()} TVET Internships Rwanda. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} TVET Internships Rwanda. All rights reserved.</p>
         </div>
       </div>
     </footer>

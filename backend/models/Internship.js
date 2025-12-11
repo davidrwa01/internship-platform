@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const internshipSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -37,4 +38,4 @@ const internshipSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-export default mongoose.model("Internship", internshipSchema);
+export default mongoose.model("Internship", internshipSchema);  

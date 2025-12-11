@@ -1,24 +1,30 @@
+// backend/routes/applicationRoutes.js
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
+
 import {
   createApplication,
   getMyApplications,
+  cancelApplication,
   getCompanyApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getApplicationsByInternshipId
 } from "../controllers/applicationController.js";
 
 const router = express.Router();
 
-// Student applies for an internship
-router.post("/", protect, createApplication);
 
-// Get applications for logged-in student
-router.get("/mine", protect, getMyApplications);
+// Protect all routes
+router.use(protect);
 
-// Get applications for company's internships
-router.get("/company", protect, getCompanyApplications);
+// Student routes
+router.post("/", createApplication);
+router.get("/my-applications", getMyApplications);
+router.delete("/:id", cancelApplication);
 
-// Update application status (company)
-router.put("/:id/status", protect, updateApplicationStatus);
+// Company routes
+router.get("/company", getCompanyApplications);
+router.get("/internship/:internshipId", getApplicationsByInternshipId);
+router.put("/:id/status", updateApplicationStatus);
 
 export default router;

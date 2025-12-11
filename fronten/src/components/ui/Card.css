@@ -1,0 +1,76 @@
+/* Card Component Styles */
+.ui-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.ui-card--interactive {
+  cursor: pointer;
+}
+
+.ui-card--interactive:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.ui-card__header {
+  padding: 20px;
+  background: linear-gradient(135deg, #0088cc 0%, #005580 100%);
+  color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ui-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ui-card__subtitle {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.ui-card__body {
+  padding: 20px;
+}
+
+.ui-card__footer {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Card variants */
+.ui-card--minimal {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+
+.ui-card--elevated {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.ui-card--outlined {
+  box-shadow: none;
+  border: 2px solid #0088cc;
+}
+
+.ui-card--success .ui-card__header {
+  background: linear-gradient(135deg, #00cc88 0%, #008855 100%);
+}
+
+.ui-card--danger .ui-card__header {
+  background: linear-gradient(135deg, #ff6b6b 0%, #cc0000 100%);
+}
+
+.ui-card--warning .ui-card__header {
+  background: linear-gradient(135deg, #ffb344 0%, #ff9900 100%);
+}

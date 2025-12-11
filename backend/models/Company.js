@@ -5,6 +5,10 @@ const companySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  ownerName: {
+    type: String,
+    required: true
+  },
   email: {
     type: String,
     required: true,
@@ -14,10 +18,14 @@ const companySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  location: {
+  province: {
     type: String,
     required: true,
     enum: ["kigali", "eastern", "western", "northern", "southern"]
+  },
+  district: {
+    type: String,
+    required: true
   },
   trainings: [{
     type: String
@@ -25,10 +33,31 @@ const companySchema = new mongoose.Schema({
   description: String,
   website: String,
   experience: String,
-  approved: { 
-    type: Boolean, 
-    default: false 
+  whatsappNumber: {
+    type: String,
+    required: false
   },
+  logo: String,
+  logoPublicId: String,
+  approved: {
+    type: Boolean,
+    default: false
+  },
+  pictures: [
+    {
+      url: String,
+      description: String,
+      publicId: String,
+      uploadedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

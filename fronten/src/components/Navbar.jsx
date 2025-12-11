@@ -1,7 +1,9 @@
-// src/components/Navbar.jsx
+// src/components/Navbar.jsx - UPDATED
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationBell from "./NotificationBell";
+import "./Navbar.css";
+
 const Navbar = ({ user, setShowModal, handleLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -62,6 +64,12 @@ const Navbar = ({ user, setShowModal, handleLogout }) => {
             <Link to="/">Home</Link>
             <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>
+            {/* ADD MESSAGES LINK FOR LOGGED IN USERS */}
+            {user && (
+              <Link to="/messages" className="messages-link">
+                <i className="fas fa-comments"></i> Messages
+              </Link>
+            )}
           </div>
 
           {/* Auth Section (Desktop) */}
@@ -75,6 +83,7 @@ const Navbar = ({ user, setShowModal, handleLogout }) => {
                 <Link to={getDashboardLink()} className="btn btn-outline">
                   Dashboard
                 </Link>
+               
                 <button className="btn btn-primary" onClick={onLogout}>
                   Logout
                 </button>
@@ -84,12 +93,7 @@ const Navbar = ({ user, setShowModal, handleLogout }) => {
                 <Link to="/login" className="btn btn-outline">
                   Login
                 </Link>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setShowModal(true)}
-                >
-                  Register Company
-                </button>
+              
               </>
             )}
           </div>
@@ -103,6 +107,12 @@ const Navbar = ({ user, setShowModal, handleLogout }) => {
               <Link to="/" onClick={toggleMenu}>Home</Link>
               <Link to="/about" onClick={toggleMenu}>About</Link>
               <Link to="/contact" onClick={toggleMenu}>Contact</Link>
+              {/* ADD MESSAGES LINK FOR MOBILE */}
+              {user && (
+                <Link to="/messages" onClick={toggleMenu}>
+                  <i className="fas fa-comments"></i> note hub
+                </Link>
+              )}
             </div>
 
             <div className="mobile-auth">
@@ -117,6 +127,13 @@ const Navbar = ({ user, setShowModal, handleLogout }) => {
                     onClick={toggleMenu}
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/messages"
+                    className="btn btn-outline full-width"
+                    onClick={toggleMenu}
+                  >
+                    <i className="fas fa-comments"></i> note hub
                   </Link>
                   <button
                     className="btn btn-primary full-width"
