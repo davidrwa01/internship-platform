@@ -35,7 +35,7 @@ const server = createServer(app);
 // ----------------------------
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "https://tvt-internship-platform.vercel.app",
     credentials: true,
   },
 });
@@ -47,7 +47,7 @@ app.set("io", io);
 // Middleware
 // ----------------------------
 app.use(cors({ 
-  origin: process.env.CLIENT_URL || "http://localhost:5173", 
+  origin: process.env.CLIENT_URL || "https://tvt-internship-platform.onrender.com/api", 
   credentials: true 
 }));
 app.use(express.json());

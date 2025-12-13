@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://tvt-internship-platform.onrender.com/api',
   timeout: 30000, // Increased timeout
   withCredentials: true, // Add this for cookies/auth
   headers: {
