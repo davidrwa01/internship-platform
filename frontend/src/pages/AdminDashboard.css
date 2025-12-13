@@ -1,372 +1,586 @@
-/* src/pages/AdminDashboard.css - ENHANCED */
+/* ======================================================
+1. Global & Utilities 
+======================================================
+*/
+
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  --background-light: #f4f6f9;
+  --card-background: #ffffff;
+  --border-color: #e3e6f0;
+  --text-dark: #343a40;
+  --text-light: #6c757d;
+  --spacing-unit: 1rem;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+.btn-outline:hover {
+  background-color: var(--primary-color);
+  color: var(--card-background);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-warning {
+  background-color: var(--warning-color);
+  color: var(--text-dark);
+}
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-info {
+  background-color: var(--info-color);
+  color: white;
+}
+.btn-info:hover {
+  background-color: #138496;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  margin-top: var(--spacing-unit);
+  color: var(--text-light);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+
+/* ======================================================
+2. Hero Section 
+======================================================
+*/
+
+.hero {
+  background-color: var(--background-light);
+  padding: 3rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+.hero p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+}
+
+/* ======================================================
+3. Tabs Navigation 
+======================================================
+*/
+
+.tab-section {
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.tab-section .tab-container {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  gap: 0;
+}
+.tab-section .tab-container .tab-btn {
+  padding: 1rem 1.2rem;
+  border: none;
+  background: none;
+  color: var(--text-light);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+.tab-section .tab-container .tab-btn i {
+  margin-right: 0.5rem;
+}
+.tab-section .tab-container .tab-btn:hover {
+  color: var(--primary-color);
+  background-color: #f8f9fa;
+}
+.tab-section .tab-container .tab-btn.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}
+.tab-section .tab-container .tab-btn .pending-badge {
+  background-color: var(--warning-color);
+  color: var(--text-dark);
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  font-weight: 600;
+  vertical-align: top;
+}
+
+/* ======================================================
+4. Overview & Stats 
+======================================================
+*/
+
 .admin-overview {
   padding: 2rem 0;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 3rem;
 }
 
 .stat-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--card-background);
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e1e5e9;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card.clickable {
-  cursor: pointer;
-}
-
-.stat-card.clickable:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-}
-
-.stat-card.pending {
-  border-left: 4px solid #ffc107;
-}
-
-.stat-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.stat-info h3 {
-  font-size: 2.5rem;
-  margin: 0;
-  color: #2c3e50;
-}
-
-.stat-info p {
-  margin: 0.5rem 0 0 0;
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.expanded-details {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #ecf0f1;
-}
-
-.expanded-details p {
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
-}
-
-/* Status badges */
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-badge.pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.status-badge.approved {
-  background: #d1edff;
-  color: #0c5460;
-}
-
-.status-badge.active {
-  background: #d4edda;
-  color: #155724;
-}
-
-.status-badge.inactive {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-/* Role badges */
-.role-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.role-badge.student {
-  background: #e8f5e8;
-  color: #2e7d32;
-}
-
-.role-badge.company {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
-.role-badge.admin {
-  background: #fce4ec;
-  color: #c2185b;
-}
-
-/* Recent Activity */
-.recent-activity {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.recent-activity h3 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-}
-
-.activity-list {
-  space-y: 1rem;
-}
-
-.activity-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  border: 1px solid #ecf0f1;
   border-radius: 8px;
-  margin-bottom: 0.75rem;
-  background: #f8f9fa;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  border-left: 0.25rem solid var(--primary-color);
+  transition: transform 0.3s;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+.stat-card h3 {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.stat-card .stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+.stat-card .stat-number.warning {
+  color: var(--warning-color);
+}
+.stat-card .stat-number.success {
+  color: var(--success-color);
+}
+.stat-card .stat-number.danger {
+  color: var(--danger-color);
 }
 
-.activity-icon {
-  font-size: 1.5rem;
-  margin-right: 1rem;
+/* ======================================================
+5. Companies Section (Grid) 
+======================================================
+*/
+
+.companies-section {
+  padding: 2rem 0;
+  background-color: var(--background-light);
 }
 
-.activity-content {
-  flex: 1;
-}
-
-.activity-content p {
-  margin: 0;
-  font-weight: 500;
-}
-
-.activity-content small {
-  color: #7f8c8d;
-}
-
-.activity-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-/* Companies Grid */
 .companies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
-  margin-top: 1.5rem;
 }
 
-.admin-company-card {
-  border: 2px solid #e1e5e9;
-  transition: all 0.3s ease;
+.company-card {
+  background: var(--card-background);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0.15rem 0.75rem 0 rgba(58, 59, 69, 0.1);
+  border-left: 4px solid var(--success-color);
+  transition: border-left-color 0.3s;
 }
-
-.admin-company-card.pending {
-  border-color: #ffc107;
-  background: #fffdf6;
+.company-card.pending {
+  border-left-color: var(--warning-color);
 }
-
-.company-header {
+.company-card.revoked {
+  border-left-color: var(--danger-color);
+}
+.company-card .company-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
 }
-
-.company-header h3 {
+.company-card .company-header h3 {
+  font-size: 1.4rem;
   margin: 0;
-  color: #2c3e50;
+  color: var(--text-dark);
 }
-
-.company-body {
-  space-y: 1rem;
+.company-card .company-status .status-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
-
-.company-details p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
+.company-card .company-status .status-badge.approved {
+  background-color: var(--success-color);
+  color: white;
 }
-
-.training-tags {
+.company-card .company-status .status-badge.pending {
+  background-color: var(--warning-color);
+  color: var(--text-dark);
+}
+.company-card .company-status .status-badge.revoked {
+  background-color: var(--danger-color);
+  color: white;
+}
+.company-card .company-status .status-badge.active {
+  background-color: var(--success-color);
+  color: white;
+}
+.company-card .company-status .status-badge.inactive {
+  background-color: var(--secondary-color);
+  color: white;
+}
+.company-card .company-body .company-details {
+  margin-bottom: 1rem;
+}
+.company-card .company-body .company-details p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+.company-card .company-body .company-trainings {
+  margin-top: 1rem;
+}
+.company-card .company-body .company-trainings strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.company-card .company-body .company-trainings .training-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
-
-.training-tag {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 0.25rem 0.75rem;
+.company-card .company-body .company-trainings .training-tags .training-tag {
+  background-color: var(--info-color);
+  color: white;
+  padding: 0.2rem 0.6rem;
   border-radius: 15px;
   font-size: 0.8rem;
 }
-
-.approval-actions {
+.company-card .company-body .approval-actions {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #ecf0f1;
+  border-top: 1px solid var(--border-color);
 }
 
-/* Table Styles */
+/* ======================================================
+6. Users & Tables 
+======================================================
+*/
+
 .table-wrapper {
   overflow-x: auto;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-background);
 }
 
 .styled-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
 }
-
-.styled-table th,
-.styled-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #ecf0f1;
-}
-
-.styled-table th {
-  background: #34495e;
+.styled-table thead tr {
+  background-color: var(--primary-color);
   color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.8rem;
+  text-align: left;
 }
-
-.styled-table tr:hover {
-  background: #f8f9fa;
+.styled-table thead tr th {
+  padding: 0.75rem 1rem;
 }
-
-.action-buttons {
+.styled-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: var(--background-light);
+}
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid var(--primary-color);
+}
+.styled-table tbody tr td {
+  padding: 0.75rem 1rem;
+  color: var(--text-dark);
+}
+.styled-table .action-buttons {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
-
-/* Pending badge for tabs */
-.pending-badge {
-  background: #ffc107;
-  color: #856404;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  margin-left: 0.5rem;
+.styled-table .btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+}
+.styled-table .role-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
   font-weight: 600;
 }
-
-/* No data states */
-.no-data, .no-activity {
-  text-align: center;
-  padding: 3rem;
-  color: #7f8c8d;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.styled-table .role-badge.student {
+  background-color: #e0f7fa;
+  color: #00bcd4;
+}
+.styled-table .role-badge.company {
+  background-color: #f3e5f5;
+  color: #9c27b0;
+}
+.styled-table .role-badge.admin {
+  background-color: #ffccbc;
+  color: #ff5722;
 }
 
-.loading {
-  text-align: center;
-  padding: 3rem;
-  font-size: 1.1rem;
-  color: #7f8c8d;
+/* ======================================================
+7. Notes Center 
+======================================================
+*/
+
+.admin-notes-section {
+  padding: 2rem 0;
+}
+.admin-notes-section .notes-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.admin-notes-section .notes-tabs .notes-tab-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-dark);
+}
+.admin-notes-section .notes-tabs .notes-tab-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--card-background);
+  border-color: var(--primary-color);
+}
+.admin-notes-section .notes-tabs .notes-tab-btn.active {
+  background-color: var(--primary-color);
+  color: var(--card-background);
+  border-color: var(--primary-color);
 }
 
-/* Responsive */
+/* ======================================================
+8. Modal (Notifications) 
+======================================================
+*/
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.modal-header h3 {
+  margin: 0;
+  color: var(--text-dark);
+}
+.modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+}
+
+.modal-body {
+  padding: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.modal-body .notification-item {
+  border-bottom: 1px solid #eee;
+  padding: 12px 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.modal-body .notification-item:hover {
+  background-color: #f0f0f0;
+}
+.modal-body .notification-item.unread {
+  background: #e8f5e9;
+  font-weight: bold;
+}
+.modal-body .notification-item.unread div:first-child {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+}
+
+/* ======================================================
+9. Responsive Adjustments 
+======================================================
+*/
+
 @media (max-width: 768px) {
+  .hero {
+    padding: 2rem 0;
+  }
+  .hero h2 {
+    font-size: 2rem;
+  }
+  
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tab-section .tab-container {
+    padding: 0 0.5rem;
+  }
+  
+  .tab-section .tab-container .tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
   }
   
   .companies-grid {
     grid-template-columns: 1fr;
   }
   
-  .activity-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .activity-actions {
-    margin-top: 1rem;
-    width: 100%;
-    justify-content: flex-end;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-  }
-  
   .styled-table {
-    font-size: 0.8rem;
+    display: block;
+    width: 100%;
   }
-}
-/* Notes Center Styles */
-.admin-notes-section {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin-top: 1.5rem;
-}
-
-.notes-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 0.5rem;
-}
-
-.notes-tab-btn {
-  background: none;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  color: #666;
-  cursor: pointer;
-  border-radius: 8px 8px 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s;
-}
-
-.notes-tab-btn:hover {
-  background: #f8f9fa;
-  color: #333;
-}
-
-.notes-tab-btn.active {
-  background: #4a6cf7;
-  color: white;
-  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.3);
-}
-
-.notes-tab-btn i {
-  font-size: 1.1rem;
+  
+  .styled-table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  .styled-table tbody tr {
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: block;
+  }
+  
+  .styled-table tbody td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+    display: block;
+  }
+  
+  .styled-table tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
 }
