@@ -6,7 +6,6 @@ import Modal from "../components/Modal";
 import ApplyInternshipModal from "../components/ApplyInternshipModal";
 import API from "../services/api";
 import "./Home.css";
-import { useNavigate } from "react-router-dom";
 
 const Home = ({ user, handleLogout, setUser }) => {
   const [companies, setCompanies] = useState([]);
@@ -20,17 +19,21 @@ const Home = ({ user, handleLogout, setUser }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("companies");
   const [notesCount, setNotesCount] = useState(0);
-  const navigate = useNavigate();
 
-  
+  // Debug logging
+  console.log("🏠 Home.jsx - User state:", user);
+  console.log("🏠 Home.jsx - Loading:", loading);
+  console.log("🏠 Home.jsx - Token:", localStorage.getItem("token"));
+
   // ✅ Fetch companies & internships - UPDATED: Only approved companies
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        console.log("🔍 Fetching companies...");
         // Fetch only approved companies
         const companiesRes = await API.get("/company");
-        console.log("All companies response:", companiesRes.data);
+        console.log("🔍 All companies response:", companiesRes.data);
         
         // Filter to show only approved companies to students and non-logged in users
         const allCompanies = Array.isArray(companiesRes.data) ? companiesRes.data : [];
@@ -38,22 +41,21 @@ const Home = ({ user, handleLogout, setUser }) => {
           company.approved === true
         );
         
-        console.log("Approved companies:", approvedCompanies);
+        console.log("🔍 Approved companies:", approvedCompanies);
         setCompanies(approvedCompanies);
 
+        console.log("🔍 Fetching internships...");
         // Fetch internships
         const internshipsRes = await API.get("/internship");
-        console.log("All internships response:", internshipsRes.data);
+        console.log("🔍 All internships response:", internshipsRes.data);
         
         const allInternships = Array.isArray(internshipsRes.data.data) ? internshipsRes.data.data : [];
-        console.log("Raw internships data:", allInternships);
+        console.log("🔍 Raw internships data:", allInternships);
 
         // Filter internships: only show internships from approved companies
         const approvedInternships = allInternships.filter(internship => {
-          console.log("Checking internship:", internship.title, "with company:", internship.company);
           // If internship has company data, check if company is approved
           if (internship.company && internship.company.approved !== undefined) {
-            console.log("Company approved flag:", internship.company.approved);
             return internship.company.approved === true;
           }
           
@@ -61,11 +63,10 @@ const Home = ({ user, handleLogout, setUser }) => {
           const relatedCompany = approvedCompanies.find(comp => 
             comp._id === internship.company?._id || comp._id === internship.company
           );
-          console.log("Found related company:", relatedCompany ? relatedCompany.name : "None");
           return relatedCompany !== undefined;
         });
         
-        console.log("Approved internships:", approvedInternships);
+        console.log("🔍 Approved internships:", approvedInternships);
 
         // Added: filter out internships already applied for by logged-in student
         let filteredInternships = approvedInternships;
@@ -76,6 +77,7 @@ const Home = ({ user, handleLogout, setUser }) => {
         }
 
         setInternships(filteredInternships);
+        
         // Fetch notes count for homepage tab
         try {
           const notesRes = await API.get('/notes');
@@ -83,48 +85,30 @@ const Home = ({ user, handleLogout, setUser }) => {
         } catch (e) {
           console.warn('Failed to fetch notes count', e);
         }
+        
+        console.log("✅ Data fetching completed successfully");
       } catch (err) {
-        console.error("Failed to fetch data:", err);
-        alert("Failed to load data. Please check if the server is running.");
+        console.error("❌ Failed to fetch data:", err);
+        // Don't show alert for network errors during initial load
+        if (err.response?.status !== 401) {
+          console.warn("Network error, but continuing without data");
+        }
         setCompanies([]);
         setInternships([]);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchData();
   }, [user, appliedInternshipIds]);
-
-  // ✅ Apply modal logic
-  const handleApplyClick = (internship) => {
-    if (!user) {
-      alert("Please login to apply for internships");
-      return;
-    }
-    if (user.role !== "student") {
-      alert("Only students can apply for internships");
-      return;
-    }
-    
-    // Additional check: ensure internship is from approved company
-    const internshipCompany = companies.find(comp => 
-      comp._id === internship.company?._id || comp._id === internship.company
-    );
-    
-    if (!internshipCompany || !internshipCompany.approved) {
-      alert("This internship is not available for application at the moment.");
-      return;
-    }
-    
-    setSelectedInternship(internship);
-    setShowApplyModal(true);
-  };
 
   // Fetch applied internships of logged-in student
   useEffect(() => {
     const fetchApplications = async () => {
       if (user?.role === "student") {
         try {
+          console.log("🔍 Fetching student applications...");
           const res = await API.get("/application/my-applications");
           if (Array.isArray(res.data)) {
             const appliedIds = new Set(res.data.map(app => app.internship._id));
@@ -138,13 +122,50 @@ const Home = ({ user, handleLogout, setUser }) => {
     fetchApplications();
   }, [user]);
 
-  const handleApplicationSuccess = (application) => {
-    console.log("Application successful:", application);
-    setShowApplyModal(false);
-    setSelectedInternship(null);
+  // ✅ Apply modal logic
+  const handleApplyClick = (internship) => {
+    console.log("🖱️ Apply button clicked for internship:", internship.title);
+    
+    if (!user) {
+      console.log("👤 No user logged in, showing login prompt");
+      alert("Please login to apply for internships");
+      return;
+    }
+    
+    if (user.role !== "student") {
+      console.log("🚫 User role not student:", user.role);
+      alert("Only students can apply for internships");
+      return;
+    }
+    
+    // Additional check: ensure internship is from approved company
+    const internshipCompany = companies.find(comp => 
+      comp._id === internship.company?._id || comp._id === internship.company
+    );
+    
+    if (!internshipCompany || !internshipCompany.approved) {
+      console.log("🏢 Company not approved:", internshipCompany);
+      alert("This internship is not available for application at the moment.");
+      return;
+    }
+    
+    console.log("✅ Opening apply modal");
+    setSelectedInternship(internship);
+    setShowApplyModal(true);
   };
 
-  // Helper
+  const handleApplicationSuccess = (application) => {
+    console.log("✅ Application successful:", application);
+    setShowApplyModal(false);
+    setSelectedInternship(null);
+    // Refresh applied internships list
+    if (user?.role === "student") {
+      const newAppliedIds = new Set([...appliedInternshipIds, application.internship._id]);
+      setAppliedInternshipIds(newAppliedIds);
+    }
+  };
+
+  // Helper function to get location name
   const getLocationName = (val) => {
     const locations = {
       kigali: "Kigali",
@@ -158,7 +179,7 @@ const Home = ({ user, handleLogout, setUser }) => {
 
   // Filters - UPDATED: Only show approved companies and their internships
   const filteredCompanies = companies.filter((company) => {
-    // Always filter out unapproved companies (should already be filtered, but double-check)
+    // Always filter out unapproved companies
     if (company.approved !== true) return false;
     
     const byLocation =
@@ -171,8 +192,6 @@ const Home = ({ user, handleLogout, setUser }) => {
     return byLocation && byDepartment;
   });
 
-  console.log("Fetched internships data:", internships);
-  console.log("Current Filters - Location:", locationFilter, "Department:", departmentFilter);
   const filteredInternships = internships.filter((internship) => {
     const internshipLocation = internship.location ? internship.location.toLowerCase().trim() : "";
     const internshipDepartment = internship.department ? internship.department.toLowerCase().trim() : "";
@@ -185,7 +204,6 @@ const Home = ({ user, handleLogout, setUser }) => {
       filterDepartment === "all" || internshipDepartment === filterDepartment;
     return byLocation && byDepartment;
   });
-  console.log("Filtered internships count:", filteredInternships.length);
 
   const uniqueDepartments = [
     ...new Set([
@@ -217,7 +235,7 @@ const Home = ({ user, handleLogout, setUser }) => {
         setUser={setUser}
       />
 
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="hero">
         <div className="container">
           <h2>Connecting TVET Students with Internship Opportunities</h2>
@@ -227,20 +245,28 @@ const Home = ({ user, handleLogout, setUser }) => {
           </p>
 
           {user ? (
-            <Link
-              to={
-                user.role === "student"
-                  ? "/student-dashboard"
-                  : user.role === "company"
-                  ? "/company-dashboard"
-                  : "/admin-dashboard"
-              }
-              className="btn btn-primary"
-            >
-              Go to Dashboard
-            </Link>
+            <div className="hero-buttons">
+              <Link
+                to={
+                  user.role === "student"
+                    ? "/student-dashboard"
+                    : user.role === "company"
+                    ? "/company-dashboard"
+                    : "/admin-dashboard"
+                }
+                className="btn btn-primary"
+              >
+                Go to Dashboard
+              </Link>
+              <button 
+                onClick={handleLogout}
+                className="btn btn-outline"
+              >
+                Logout
+              </button>
+            </div>
           ) : (
-            <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+            <div className="hero-buttons">
               <Link to="/login" className="btn btn-primary">
                 Login
               </Link>
@@ -252,7 +278,7 @@ const Home = ({ user, handleLogout, setUser }) => {
         </div>
       </section>
 
-      {/* Tabs */}
+      {/* Tabs Section */}
       <section className="tab-section">
         <div className="container">
           <div className="tab-container">
@@ -284,7 +310,8 @@ const Home = ({ user, handleLogout, setUser }) => {
           </div>
         </div>
       </section>
-      {/* Filters */}
+
+      {/* Filters Section */}
       <section className="filter-section">
         <div className="container">
           <div className="filter-container">
@@ -321,11 +348,13 @@ const Home = ({ user, handleLogout, setUser }) => {
         </div>
       </section>
 
-      {/* Companies */}
+      {/* Companies Tab Content */}
       {activeTab === "companies" && (
         <section className="companies-section">
           <div className="container">
-            <h2 className="section-title">Available Internship Companies</h2>
+            <h2 className="section-title">
+              Available Internship Companies ({filteredCompanies.length})
+            </h2>
             {loading ? (
               <div className="loading-skeleton">
                 {[...Array(6)].map((_, i) => (
@@ -346,20 +375,16 @@ const Home = ({ user, handleLogout, setUser }) => {
                         </div>
                       )}
                       
-                      {/* ✅ Updated: clickable company name - only if approved or admin/owner */}
                       <h3>
                         {canViewCompanyDetails(company) ? (
                           <Link
                             to={`/company/${company._id}`}
-                            style={{
-                              color: "inherit",
-                              textDecoration: "none",
-                            }}
+                            className="company-link"
                           >
                             {company.name}
                           </Link>
                         ) : (
-                          <span style={{ opacity: company.approved ? 1 : 0.6 }}>
+                          <span className={`company-name ${!company.approved ? 'pending' : ''}`}>
                             {company.name}
                             {!company.approved && " (Pending Approval)"}
                           </span>
@@ -470,11 +495,13 @@ const Home = ({ user, handleLogout, setUser }) => {
         </section>
       )}
 
-      {/* Internships */}
+      {/* Internships Tab Content */}
       {activeTab === "internships" && (
         <section className="companies-section">
           <div className="container">
-            <h2 className="section-title">Available Internships</h2>
+            <h2 className="section-title">
+              Available Internships ({filteredInternships.length})
+            </h2>
             {loading ? (
               <div className="loading-skeleton">
                 {[...Array(6)].map((_, i) => (
@@ -603,10 +630,10 @@ const Home = ({ user, handleLogout, setUser }) => {
               </div>
             )}
           </div>
-
         </section>
       )}
 
+      {/* Modals */}
       {showApplyModal && selectedInternship && (
         <ApplyInternshipModal
           internship={selectedInternship}
@@ -620,6 +647,7 @@ const Home = ({ user, handleLogout, setUser }) => {
       )}
 
       {showModal && <Modal onClose={() => setShowModal(false)} />}
+      
       <Footer />
     </>
   );

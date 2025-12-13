@@ -67,7 +67,9 @@ const App = () => {
     if (loading)
       return <div className="text-center p-5">Loading session…</div>;
 
-    if (!user) return <Navigate to="/login" replace />;
+    // If there's no authenticated user, send them to the public Home page
+    // so they see the app landing page first instead of being forced to /login.
+    if (!user) return <Navigate to="/" replace />;
 
     if (allowedRoles && !allowedRoles.includes(user.role))
       return <Navigate to="/" replace />;
@@ -96,7 +98,10 @@ const App = () => {
           />
           <Route path="/about" element={<About user={user} />} />
           <Route path="/contact" element={<Contact user={user} />} />
-          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" replace /> : <Login setUser={setUser} />}
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/company/:companyId" element={<CompanyProfile user={user} />} />
           <Route path="/notes" element={<Notes user={user} />} />
