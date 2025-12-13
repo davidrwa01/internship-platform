@@ -47,7 +47,7 @@ app.set("io", io);
 // Middleware
 // ----------------------------
 app.use(cors({ 
-  origin: process.env.CLIENT_URL || "https://tvt-internship-platform.onrender.com/api", 
+  origin: process.env.CLIENT_URL || "https://tvt-internship-platform.vercel.app",
   credentials: true 
 }));
 app.use(express.json());
