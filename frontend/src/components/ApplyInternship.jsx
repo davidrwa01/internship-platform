@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import API from "../services/api";
-import "./home.css";
+import './Home.css';
 
 const ApplyInternship = ({ user }) => {
   const { internshipId } = useParams();
