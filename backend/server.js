@@ -75,6 +75,10 @@ app.use("/api/upload", uploadRoutes);
 // ----------------------------
 // Health & Test Routes
 // ----------------------------
+app.get("/api", (req, res) => {
+  res.json({ success: true, message: "API is running 🚀" });
+});
+
 app.get("/", (req, res) => res.send("TVET Internship Platform API is running"));
 app.get("/api/test", (req, res) => res.json({ message: "API is working!" }));
 
